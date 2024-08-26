@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/Entity.qml</file>
+        <file>qml/Marquee2.qml</file>
+    </qresource>
+</RCC>

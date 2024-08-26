@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Categories=Applications;
+Exec=asteroid-hass
+Icon=ios-home-outline
+X-Asteroid-Center-Color=#00A698
+X-Asteroid-Outer-Color=#000C07
