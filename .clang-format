@@ -1,0 +1,23 @@
+﻿---
+BasedOnStyle: Microsoft
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: false
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+InsertBraces: true
+SeparateDefinitionBlocks: Always
