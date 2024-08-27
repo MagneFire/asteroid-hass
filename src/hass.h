@@ -59,10 +59,10 @@ class Hass : public QObject
 {
     Q_OBJECT
 
-public:
     Hass(QObject *parent = NULL);
 
-    Q_INVOKABLE void test();
+public:
+    static QObject *qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     void Post(QString endpoint, QString data);
     QNetworkReply *Get(QString endpoint);

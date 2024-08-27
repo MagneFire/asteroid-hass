@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     QScopedPointer<QGuiApplication> app(AsteroidApp::application(argc, argv));
     QScopedPointer<QQuickView> view(AsteroidApp::createView());
-    qmlRegisterType<Hass>("org.asteroid.hass", 1, 0, "Hass");
+    qmlRegisterSingletonType<Hass>("org.asteroid.hass", 1, 0, "Hass", &Hass::qmlInstance);
     view->setSource(QUrl("qrc:/qml/main.qml"));
     view->resize(app->primaryScreen()->size());
     view->show();

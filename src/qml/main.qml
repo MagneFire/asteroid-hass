@@ -25,14 +25,13 @@ import org.nemomobile.systemsettings 1.0
 import Nemo.KeepAlive 1.1
 
 Application {
-    Hass { id: hass }
     centerColor: "#00A698"
     outerColor: "#000C07"
     id: app
 
     Component.onCompleted: {
         DisplayBlanking.preventBlanking = true
-        hass.GetStates()
+        Hass.GetStates()
     }
 
     Component {
@@ -49,7 +48,7 @@ Application {
         header: spacer
         footer: spacer
 
-        model: hass.getModel()
+        model: Hass.getModel()
         delegate: Entity {
             clip: false
             title: name
@@ -59,7 +58,7 @@ Application {
                       "";
             onClicked: {
                 console.log("Click " + domain + "." + id)
-                hass.ToggleState(domain, id);
+                Hass.ToggleState(domain, id);
             }
         }
     }

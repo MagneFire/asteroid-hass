@@ -16,6 +16,14 @@ Hass::Hass(QObject *parent) :
     m_token = settings.value("HASS_TOKEN").toString();
 }
 
+QObject * Hass::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine) {
+    Q_UNUSED(engine);
+    Q_UNUSED(scriptEngine);
+
+    static Hass instance;
+    return &instance;
+}
+
 void Hass::Post(QString endpoint, QString data)
 {
     QUrl url = m_host.resolved(endpoint);
