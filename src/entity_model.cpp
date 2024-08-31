@@ -42,6 +42,10 @@ QVariant EntityModel::data(const QModelIndex &index, int role) const
     {
         return file.state();
     }
+    if (role == InDashboardRole)
+    {
+        return file.inDashboard();
+    }
     return {};
 }
 
@@ -52,5 +56,6 @@ QHash<int, QByteArray> EntityModel::roleNames() const
     roles[NameRole] = "name";
     roles[IdRole] = "id";
     roles[StateRole] = "state";
+    roles[InDashboardRole] = "inDashboard";
     return roles;
 }

@@ -14,7 +14,8 @@ class EntityModel : public QAbstractListModel
         DomainRole = Qt::UserRole + 1,
         NameRole,
         IdRole,
-        StateRole
+        StateRole,
+        InDashboardRole
     };
 
     explicit EntityModel(QObject *parent = nullptr);

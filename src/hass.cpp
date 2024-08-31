@@ -123,7 +123,7 @@ void Hass::ParseStates(QNetworkReply *reply)
         }
 
         qDebug() << domain << id << friendly_name << state;
-        model.addFile(Entity(domain, friendly_name, id, state));
+        model.addFile(Entity(domain, friendly_name, id, state, false));
     }
 }
 
