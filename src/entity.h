@@ -5,16 +5,16 @@
 
 class Entity
 {
-public:
+  public:
     Entity(const QString &domain, const QString &name, const QString &id, const QString &state);
-    virtual ~Entity() {};
+    virtual ~Entity() = default;
 
-    QString domain() const;
-    QString name() const;
-    QString id() const;
-    QString state() const;
+    [[nodiscard]] QString domain() const;
+    [[nodiscard]] QString name() const;
+    [[nodiscard]] QString id() const;
+    [[nodiscard]] QString state() const;
 
-private:
+  private:
     const QString m_domain;
     const QString m_name;
     const QString m_id;

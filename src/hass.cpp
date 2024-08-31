@@ -2,21 +2,21 @@
 #include <QDebug>
 
 #define API "api"
-#define SERVICES_ENDPOINT API"/services"
-#define SERVICE_ACTION_ENDPOINT API"/services/%1/%2"
-#define STATES_ENDPOINT API"/states"
+#define SERVICES_ENDPOINT API "/services"
+#define SERVICE_ACTION_ENDPOINT API "/services/%1/%2"
+#define STATES_ENDPOINT API "/states"
 
-Hass::Hass(QObject *parent) :
-    QObject(parent)
+Hass::Hass(QObject *parent) : QObject(parent)
 {
-    manager = new QNetworkAccessManager(this);
+    m_manager = new QNetworkAccessManager(this);
 
-    QSettings settings(QDir::homePath() + "/.config/asteroid-hass.conf", QSettings::IniFormat);
+    const QSettings settings(QDir::homePath() + "/.config/asteroid-hass.conf", QSettings::IniFormat);
     m_host = QUrl(settings.value("HASS_HOST").toString());
     m_token = settings.value("HASS_TOKEN").toString();
 }
 
-QObject * Hass::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine) {
+QObject *Hass::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);
 
@@ -24,40 +24,41 @@ QObject * Hass::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine) {
     return &instance;
 }
 
-void Hass::Post(QString endpoint, QString data)
+void Hass::Post(const QString &endpoint, const QString &data) const
 {
-    QUrl url = m_host.resolved(endpoint);
+    const QUrl url = m_host.resolved(endpoint);
     qDebug() << "Hass::Post:" << url.url() << data;
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
-    QByteArray headerData = "Bearer " + m_token.toUtf8();
+    const QByteArray headerData = "Bearer " + m_token.toUtf8();
     request.setRawHeader("Authorization", headerData);
-    manager->post(request, data.toUtf8());
+    m_manager->post(request, data.toUtf8());
 }
 
-QNetworkReply *Hass::Get(QString endpoint)
+QNetworkReply *Hass::Get(const QString &endpoint) const
 {
-    QUrl url = m_host.resolved(endpoint);
+    const QUrl url = m_host.resolved(endpoint);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, QString("application/json"));
-    QByteArray headerData = "Bearer " + m_token.toUtf8();
+    const QByteArray headerData = "Bearer " + m_token.toUtf8();
     request.setRawHeader("Authorization", headerData);
-    return manager->get(request);
+    return m_manager->get(request);
 }
 
-void Hass::ParseServices(QNetworkReply * reply) {
+void Hass::ParseServices(QNetworkReply *reply)
+{
     qDebug() << "Parsing services";
-    QString answer = reply->readAll();
-    auto doc = QJsonDocument::fromJson(answer.toUtf8());
+    const QString answer = reply->readAll();
+    const auto doc = QJsonDocument::fromJson(answer.toUtf8());
 
-    if(doc.isNull())
+    if (doc.isNull())
     {
         qDebug() << "Not a valid document";
         return;
     }
 
-    if(!doc.isArray())
+    if (!doc.isArray())
     {
         qDebug() << "Unexpected data type";
         return;
@@ -65,30 +66,34 @@ void Hass::ParseServices(QNetworkReply * reply) {
 
     auto obj = doc.array();
 
-    for(const auto& text : obj) {
+    for (const auto &text : obj)
+    {
         auto service = text.toObject();
         qDebug() << service.value("domain");
         // qDebug() << text.toObject();
     }
 }
 
-void Hass::GetServices() {
-    auto reply = Get(SERVICES_ENDPOINT);
-    connect(reply, &QNetworkReply::finished, this, [=]() {ParseServices(reply);});
+void Hass::GetServices()
+{
+    const auto reply = Get(SERVICES_ENDPOINT);
+    const auto connection = connect(reply, &QNetworkReply::finished, this, [=]() { ParseServices(reply); });
+    Q_ASSERT(connection);
 }
 
-void Hass::ParseStates(QNetworkReply * reply) {
+void Hass::ParseStates(QNetworkReply *reply)
+{
     qDebug() << "Parsing states";
     QString answer = reply->readAll();
     auto doc = QJsonDocument::fromJson(answer.toUtf8());
 
-    if(doc.isNull())
+    if (doc.isNull())
     {
         qDebug() << "Not a valid document";
         return;
     }
 
-    if(!doc.isArray())
+    if (!doc.isArray())
     {
         qDebug() << "Unexpected data type";
         return;
@@ -96,19 +101,24 @@ void Hass::ParseStates(QNetworkReply * reply) {
 
     auto obj = doc.array();
 
-    for(const auto& text : obj) {
+    for (const auto &text : obj)
+    {
         auto service = text.toObject();
         auto attributes = service.value("attributes").toObject();
         auto entity = service.value("entity_id").toString();
         auto state = service.value("state").toString();
         auto entity_split = entity.split('.');
-        auto domain = entity_split[0];
-        auto id = entity_split[1];
+        const auto &domain = entity_split[0];
+        const auto &id = entity_split[1];
         auto friendly_name = attributes.value("friendly_name").toString();
 
-        if (state == "unavailable") continue;
+        if (state == "unavailable")
+        {
+            continue;
+        }
 
-        if (domain != "switch" && domain != "light" && domain != "button") {
+        if (domain != "switch" && domain != "light" && domain != "button")
+        {
             continue;
         }
 
@@ -117,17 +127,21 @@ void Hass::ParseStates(QNetworkReply * reply) {
     }
 }
 
-void Hass::GetStates() {
-    auto reply = Get(STATES_ENDPOINT);
-    connect(reply, &QNetworkReply::finished, this, [=]() {ParseStates(reply);});
+void Hass::GetStates()
+{
+    const auto reply = Get(STATES_ENDPOINT);
+    const auto connection = connect(reply, &QNetworkReply::finished, this, [=]() { ParseStates(reply); });
+    Q_ASSERT(connection);
 }
 
-void Hass::ToggleState(QString domain, QString id) {
-    auto PIStr = QString("{\"entity_id\": \"%1.%2\"}").arg(domain, id);
-    auto endpoint = QString(SERVICE_ACTION_ENDPOINT).arg(domain, "toggle");
-    Post(endpoint, PIStr);
+void Hass::ToggleState(const QString &domain, const QString &id) const
+{
+    const auto data = QString(R"({"entity_id": "%1.%2"})").arg(domain, id);
+    const auto endpoint = QString(SERVICE_ACTION_ENDPOINT).arg(domain, "toggle");
+    Post(endpoint, data);
 }
 
-QObject* Hass::getModel() {
+QObject *Hass::getModel()
+{
     return &model;
 }

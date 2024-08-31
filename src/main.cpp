@@ -22,8 +22,12 @@
 
 #include "hass.h"
 
-void setupPaths() {
-    if (QFile::exists(QDir::homePath() + "/.config/asteroid-hass.conf")) return;
+void setupPaths()
+{
+    if (QFile::exists(QDir::homePath() + "/.config/asteroid-hass.conf"))
+    {
+        return;
+    }
 
     QDir().mkpath(QDir::homePath() + "/.config");
 
@@ -31,9 +35,12 @@ void setupPaths() {
     settings.setValue("HASS_HOST", "");
     settings.setValue("HASS_TOKEN", "");
     settings.sync();
-    if(settings.status() == QSettings::NoError) {
+    if (settings.status() == QSettings::NoError)
+    {
         qDebug() << "Config file was properly setup.";
-    } else {
+    }
+    else
+    {
         qDebug() << "Error while creating config file " << settings.status();
     }
 }
@@ -42,8 +49,8 @@ int main(int argc, char *argv[])
 {
     setupPaths();
 
-    QScopedPointer<QGuiApplication> app(AsteroidApp::application(argc, argv));
-    QScopedPointer<QQuickView> view(AsteroidApp::createView());
+    const QScopedPointer app(AsteroidApp::application(argc, argv));
+    const QScopedPointer view(AsteroidApp::createView());
     qmlRegisterSingletonType<Hass>("org.asteroid.hass", 1, 0, "Hass", &Hass::qmlInstance);
     view->setSource(QUrl("qrc:/qml/main.qml"));
     view->resize(app->primaryScreen()->size());

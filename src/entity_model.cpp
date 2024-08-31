@@ -1,10 +1,8 @@
 #include "entity_model.h"
 #include <QDebug>
 
-EntityModel::EntityModel(QObject *parent)
-: QAbstractListModel(parent)
+EntityModel::EntityModel(QObject *parent) : QAbstractListModel(parent)
 {
-
 }
 
 void EntityModel::addFile(const Entity &file)
@@ -14,28 +12,41 @@ void EntityModel::addFile(const Entity &file)
     endInsertRows();
 }
 
-int EntityModel::rowCount(const QModelIndex & parent) const {
+int EntityModel::rowCount(const QModelIndex &parent) const
+{
     Q_UNUSED(parent);
     return m_files.count();
 }
 
-QVariant EntityModel::data(const QModelIndex & index, int role) const {
+QVariant EntityModel::data(const QModelIndex &index, int role) const
+{
     if (index.row() < 0 || index.row() >= m_files.count())
-        return QVariant();
+    {
+        return {};
+    }
 
     const Entity &file = m_files[index.row()];
     if (role == DomainRole)
+    {
         return file.domain();
-    else if (role == NameRole)
+    }
+    if (role == NameRole)
+    {
         return file.name();
-    else if (role == IdRole)
+    }
+    if (role == IdRole)
+    {
         return file.id();
-    else if (role == StateRole)
+    }
+    if (role == StateRole)
+    {
         return file.state();
-    return QVariant();
+    }
+    return {};
 }
 
-QHash<int, QByteArray> EntityModel::roleNames() const {
+QHash<int, QByteArray> EntityModel::roleNames() const
+{
     QHash<int, QByteArray> roles;
     roles[DomainRole] = "domain";
     roles[NameRole] = "name";

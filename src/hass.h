@@ -49,34 +49,32 @@
 #ifndef HASS_H
 #define HASS_H
 
+#include "entity_model.h"
 #include <QObject>
 #include <QtQml>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkReply>
-#include "entity_model.h"
 
 class Hass : public QObject
 {
     Q_OBJECT
 
-    Hass(QObject *parent = NULL);
+    explicit Hass(QObject *parent = nullptr);
 
-public:
+  public:
     static QObject *qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
 
-    void Post(QString endpoint, QString data);
-    QNetworkReply *Get(QString endpoint);
+    void Post(const QString &endpoint, const QString &data) const;
+    QNetworkReply *Get(const QString &endpoint) const;
     Q_INVOKABLE void GetServices();
     Q_INVOKABLE void GetStates();
 
     void ParseServices(QNetworkReply *);
     void ParseStates(QNetworkReply *);
-    Q_INVOKABLE void ToggleState(QString domain, QString id);
+    Q_INVOKABLE void ToggleState(const QString &domain, const QString &id) const;
 
-    Q_INVOKABLE QObject* getModel();
+    Q_INVOKABLE QObject *getModel();
 
-private:
-    QNetworkAccessManager *manager;
+  private:
+    QNetworkAccessManager *m_manager;
     QUrl m_host;
     QString m_token;
     EntityModel model;
