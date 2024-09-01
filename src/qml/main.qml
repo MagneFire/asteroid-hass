@@ -42,6 +42,16 @@ Application {
     Component {
         id: firstPageComponent
         Item {
+            Timer {
+                id: setupTimer
+                interval: 100
+                onTriggered: layerStack.push(settingsLayer)
+            }
+            Component.onCompleted: {
+                if (dashboard.count === 0) {
+                    setupTimer.start()
+                }
+            }
             ListView {
                 id: dashboard
                 anchors.fill: parent
