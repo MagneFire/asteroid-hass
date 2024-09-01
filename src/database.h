@@ -21,6 +21,7 @@ class Database : public QObject
     void upsertEntity(const Entity &entity);
 
   private:
+    void sort();
     QList<Entity>::iterator findInModel(const QString &domain, const QString &id);
     void removeFromModel(const QString &domain, const QString &id);
     QList<Entity> m_entities;

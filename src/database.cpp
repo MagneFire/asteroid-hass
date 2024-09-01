@@ -74,6 +74,7 @@ void Database::fetchEntities()
         qDebug() << "Fetching:Adding" << entity_id;
         m_entities.append(new_entity);
     }
+    sort();
 }
 
 QList<Entity> *Database::getAllEntities()
@@ -129,6 +130,13 @@ void Database::upsertEntity(const Entity &entity)
     }
 
     m_entities.append(new_entity);
+    sort();
+}
+
+void Database::sort()
+{
+    std::sort(m_entities.begin(), m_entities.end(),
+              [](const Entity &a, const Entity &b) { return a.inDashboard() > b.inDashboard(); });
 }
 
 QList<Entity>::iterator Database::findInModel(const QString &domain, const QString &id)
