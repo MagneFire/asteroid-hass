@@ -21,18 +21,13 @@ import QtQuick 2.9
 import org.asteroid.controls 1.0
 import org.asteroid.utils 1.0
 import org.asteroid.hass 1.0
-import org.nemomobile.systemsettings 1.0
-import Nemo.KeepAlive 1.1
 
 Application {
     centerColor: "#00A698"
     outerColor: "#000C07"
     id: app
 
-    Component.onCompleted: {
-        DisplayBlanking.preventBlanking = true
-        Hass.GetStates()
-    }
+    Component.onCompleted: Hass.GetStates()
 
     LayerStack {
         id: layerStack
