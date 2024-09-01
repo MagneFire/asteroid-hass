@@ -13,14 +13,17 @@ class Database : public QObject
     explicit Database(QObject *parent = nullptr);
     void connect();
     void setup();
-    Entity *getEntity(const QString &domain, const QString &id);
+    bool exists(const QString &domain, const QString &id);
+    Entity getEntity(const QString &domain, const QString &id);
     void fetchEntities();
-    QList<Entity *> *getAllEntities();
-    void removeEntity(const Entity *entity);
-    void updateOrInsertEntity(const Entity *entity);
+    QList<Entity> *getAllEntities();
+    void removeEntity(const Entity &entity);
+    void upsertEntity(const Entity &entity);
 
   private:
-    QList<Entity *> m_entities;
+    QList<Entity>::iterator findInModel(const QString &domain, const QString &id);
+    void removeFromModel(const QString &domain, const QString &id);
+    QList<Entity> m_entities;
 };
 
 #endif

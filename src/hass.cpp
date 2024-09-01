@@ -125,10 +125,18 @@ void Hass::ParseStates(QNetworkReply *reply)
             continue;
         }
 
-        // qDebug() << domain << id << friendly_name << state;
-        const auto entity = new Entity(domain, friendly_name, id, state, false);
-        m_database->updateOrInsertEntity(entity);
-        // model.addFile(Entity(domain, friendly_name, id, state, false));
+        if (!m_database->exists(domain, id))
+        {
+            auto entity = Entity(domain, friendly_name, id, state, -1);
+            m_database->upsertEntity(entity);
+        }
+        else
+        {
+            auto entity = m_database->getEntity(domain, id);
+            entity.setName(friendly_name);
+            entity.setState(state);
+            m_database->upsertEntity(entity);
+        }
     }
     updateEntities();
 }
@@ -154,10 +162,10 @@ QObject *Hass::getModel()
 
 void Hass::updateEntities()
 {
-    auto entities = m_database->getAllEntities();
+    const auto entities = m_database->getAllEntities();
     model.clear();
-    for (auto entity : *entities)
+    for (const auto &entity : *entities)
     {
-        model.addFile(*entity);
+        model.addFile(entity);
     }
 }
