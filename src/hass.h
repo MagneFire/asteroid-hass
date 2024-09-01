@@ -71,8 +71,11 @@ class Hass : public QObject
     void ParseServices(QNetworkReply *);
     void ParseStates(QNetworkReply *);
     Q_INVOKABLE void ToggleState(const QString &domain, const QString &id) const;
+    Q_INVOKABLE void EnableInDashboard(const QString &domain, const QString &id);
+    Q_INVOKABLE void DisableInDashboard(const QString &domain, const QString &id);
 
     Q_INVOKABLE QObject *getModel();
+    Q_INVOKABLE QObject *getDashboardModel();
 
   private:
     void updateEntities();
@@ -81,6 +84,7 @@ class Hass : public QObject
     QUrl m_host;
     QString m_token;
     EntityModel model;
+    EntityModel dashboard_model;
 };
 
 #endif

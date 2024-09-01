@@ -155,17 +155,78 @@ void Hass::ToggleState(const QString &domain, const QString &id) const
     Post(endpoint, data);
 }
 
+void Hass::EnableInDashboard(const QString &domain, const QString &id)
+{
+    if (!m_database->exists(domain, id))
+    {
+        qDebug() << domain << id << "Does not exist";
+        return;
+    }
+    auto entity = m_database->getEntity(domain, id);
+    if (entity.inDashboard() >= 0)
+    {
+        qDebug() << domain << id << "Already in dashboard";
+        return;
+    }
+    const QList<Entity> *entities = m_database->getAllEntities();
+    if (!entities || entities->isEmpty())
+    {
+        qDebug() << domain << id << "List is empty!";
+        return;
+    }
+
+    int maxDashboardIndex = 0;
+
+    const auto it = std::max_element(entities->begin(), entities->end(), [](const Entity &a, const Entity &b) {
+        return a.inDashboard() < b.inDashboard();
+    });
+
+    if (it != entities->end())
+    {
+        maxDashboardIndex = it->inDashboard();
+    }
+    qDebug() << maxDashboardIndex;
+
+    entity.setInDashboard(maxDashboardIndex + 1);
+    m_database->upsertEntity(entity);
+    updateEntities();
+}
+
+void Hass::DisableInDashboard(const QString &domain, const QString &id)
+{
+    if (!m_database->exists(domain, id))
+    {
+        qDebug() << domain << id << "Does not exist";
+        return;
+    }
+    auto entity = m_database->getEntity(domain, id);
+
+    entity.setInDashboard(-1);
+    m_database->upsertEntity(entity);
+    updateEntities();
+}
+
 QObject *Hass::getModel()
 {
     return &model;
+}
+
+QObject *Hass::getDashboardModel()
+{
+    return &dashboard_model;
 }
 
 void Hass::updateEntities()
 {
     const auto entities = m_database->getAllEntities();
     model.clear();
+    dashboard_model.clear();
     for (const auto &entity : *entities)
     {
+        if (entity.inDashboard() >= 0)
+        {
+            dashboard_model.addFile(entity);
+        }
         model.addFile(entity);
     }
 }
