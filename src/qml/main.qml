@@ -34,31 +34,62 @@ Application {
         Hass.GetStates()
     }
 
-    Component {
-        id: spacer
-        Item {
-            height: app.height * (DeviceInfo.hasRoundScreen ? 0.06 : 0.02)
-            width: height
-        }
+    LayerStack {
+        id: layerStack
+        firstPage: firstPageComponent
     }
 
-    ListView {
-        id: romBrowser
-        anchors.fill: parent
-        header: spacer
-        footer: spacer
+    Component {
+        id: settingsLayer;
+        Settings { }
+    }
 
-        model: Hass.getModel()
-        delegate: Entity {
-            clip: false
-            title: name
-            iconName: domain == "button" ? "ios-radio-button-on" :
-                      domain == "light" ? "ios-bulb-outline":
-                      domain == "switch" ? "ios-switch-outline":
-                      "";
-            onClicked: {
-                console.log("Click " + domain + "." + id)
-                Hass.ToggleState(domain, id);
+    Component {
+        id: firstPageComponent
+        Item {
+            ListView {
+                id: dashboard
+                anchors.fill: parent
+                header: Component {
+                    Item {
+                        height: app.height * (DeviceInfo.hasRoundScreen ? 0.06 : 0.02)
+                        width: height
+                    }
+                }
+                footer: Component {
+                    Item {
+                        height: settings.height
+                        width: height
+                    }
+                }
+
+                model: Hass.getDashboardModel()
+                delegate: Entity {
+                    clip: false
+                    title: name
+                    iconName: domain === "button" ? "ios-radio-button-on" :
+                            domain === "light" ? "ios-bulb-outline":
+                                domain === "switch" ? "ios-switch-outline":
+                                "";
+                    onClicked: {
+                        Hass.ToggleState(domain, id);
+                    }
+                }
+            }
+
+            IconButton {
+                id: settings
+                visible: dashboard.atYEnd
+                enabled: opacity === 1.0
+                opacity: visible ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                iconName:  "ios-settings-outline"
+                anchors {
+                    bottom: parent.bottom
+                    horizontalCenter: parent.horizontalCenter
+                    bottomMargin: Dims.iconButtonMargin
+                }
+                onClicked: layerStack.push(settingsLayer)
             }
         }
     }

@@ -21,11 +21,11 @@ import org.asteroid.controls 1.0
 import org.asteroid.utils 1.0
 
 Item {
-    // alias to recieve string label.text
+    // alias to receive string label.text
     property alias title: label.text
-    // alias to recieve string icon.name
+    // alias to receive string icon.name
     property alias iconName: icon.name
-    // alias to recieve boolean highlight.forceOn
+    // alias to receive boolean highlight.forceOn
     property alias highlight: highlight.forceOn
     // size of the icon/s
     property int iconSize: height - Dims.h(6)
@@ -55,23 +55,16 @@ Item {
             leftMargin: DeviceInfo.hasRoundScreen ? Dims.w(18) : Dims.w(12)
         }
     }
-    // Marquee2
     Marquee2 {
         id: label
-        // clip: false
 
         anchors {
             leftMargin: DeviceInfo.hasRoundScreen ? Dims.w(6) : Dims.w(10)
             left: icon.right
             verticalCenter: parent.verticalCenter
-
-            // anchors.top: songLabel.bottom
-            // anchors.topMargin: -Dims.h(1)
-            // anchors.horizontalCenter: parent.horizontalCenter
-            // height: Dims.h(10)
+            right: parent.right
         }
         height: parent.height
-        width: DeviceInfo.hasRoundScreen ? Dims.w(70) : Dims.w(80)
 
         font {
             pixelSize: labelFontSize
