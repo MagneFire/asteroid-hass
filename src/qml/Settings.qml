@@ -45,31 +45,32 @@ Item {
             Entity {
                 id: row
                 clip: true
-                width: parent.width - (DeviceInfo.hasRoundScreen ? Dims.w(18) : Dims.w(12)) - enableSwitch.width
+                width: parent.width
                 title: name
-                iconName: domain === "button" ? "ios-radio-button-on" :
-                        domain === "light" ? "ios-bulb-outline":
-                            domain === "switch" ? "ios-switch-outline":
-                            "";
+                iconName: (domain === "button" ? "ios-radio-button-on" :
+                           domain === "light" ? "ios-bulb-outline":
+                           domain === "switch" ? "ios-switch-outline":
+                           "");
                 onClicked: {
-                    console.log("Click " + domain + "." + id)
-                    enableSwitch.checked = !enableSwitch.checked
-                }
-            }
-            Switch {
-                id: enableSwitch
-                width: row.height - Dims.h(6)
-                Component.onCompleted: checked = inDashboard >= 0
-                onCheckedChanged: {
-                    if (checked) {
-                        Hass.EnableInDashboard(domain, id);
-                    } else {
+                    if (inDashboard >= 0) {
                         Hass.DisableInDashboard(domain, id);
+                    } else {
+                        Hass.EnableInDashboard(domain, id);
                     }
                 }
+            }
+
+            Icon {
+                property var iconSize: row.height - Dims.h(6)
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: DeviceInfo.hasRoundScreen ? Dims.w(18) : Dims.w(12)
+                anchors.verticalCenterOffset: iconSize/2
+                anchors.left: row.left
+                anchors.leftMargin: (DeviceInfo.hasRoundScreen ? Dims.w(18) : Dims.w(12)) + iconSize/2
+                width: iconSize/2
+                height: width
+                name: "ios-checkmark-circle"
+                opacity: inDashboard >= 0 ? (!enabled ? 0.6 : 1.0) : 0.0
+                Behavior on opacity { NumberAnimation { duration: 100 } }
             }
         }
     }
