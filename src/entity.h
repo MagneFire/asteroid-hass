@@ -14,13 +14,18 @@ class Entity
     [[nodiscard]] QString id() const;
     [[nodiscard]] QString state() const;
     [[nodiscard]] bool inDashboard() const;
+    void setDomain(const QString &domain);
+    void setName(const QString &name);
+    void setId(const QString &id);
+    void setState(bool state);
+    void setInDashboard(bool inDashboard);
 
   private:
-    const QString m_domain;
-    const QString m_name;
-    const QString m_id;
-    const QString m_state;
-    const bool m_inDashboard;
+    QString m_domain;
+    QString m_name;
+    QString m_id;
+    QString m_state;
+    bool m_inDashboard;
 };
 
 #endif

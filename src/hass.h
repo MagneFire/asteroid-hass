@@ -49,6 +49,7 @@
 #ifndef HASS_H
 #define HASS_H
 
+#include "database.h"
 #include "entity_model.h"
 #include <QObject>
 #include <QtQml>
@@ -74,6 +75,8 @@ class Hass : public QObject
     Q_INVOKABLE QObject *getModel();
 
   private:
+    void updateEntities();
+    Database *m_database;
     QNetworkAccessManager *m_manager;
     QUrl m_host;
     QString m_token;

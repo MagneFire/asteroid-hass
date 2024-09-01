@@ -5,6 +5,13 @@ EntityModel::EntityModel(QObject *parent) : QAbstractListModel(parent)
 {
 }
 
+void EntityModel::clear()
+{
+    beginResetModel();
+    m_files.clear();
+    endResetModel();
+}
+
 void EntityModel::addFile(const Entity &file)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());

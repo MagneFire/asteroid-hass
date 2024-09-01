@@ -13,6 +13,8 @@ Hass::Hass(QObject *parent) : QObject(parent)
     const QSettings settings(QDir::homePath() + "/.config/asteroid-hass.conf", QSettings::IniFormat);
     m_host = QUrl(settings.value("HASS_HOST").toString());
     m_token = settings.value("HASS_TOKEN").toString();
+    m_database = new Database(this);
+    updateEntities();
 }
 
 QObject *Hass::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -100,14 +102,15 @@ void Hass::ParseStates(QNetworkReply *reply)
     }
 
     auto obj = doc.array();
+    qDebug() << "Retreived all" << obj.count();
 
     for (const auto &text : obj)
     {
         auto service = text.toObject();
         auto attributes = service.value("attributes").toObject();
-        auto entity = service.value("entity_id").toString();
+        auto entity_id = service.value("entity_id").toString();
         auto state = service.value("state").toString();
-        auto entity_split = entity.split('.');
+        auto entity_split = entity_id.split('.');
         const auto &domain = entity_split[0];
         const auto &id = entity_split[1];
         auto friendly_name = attributes.value("friendly_name").toString();
@@ -122,9 +125,12 @@ void Hass::ParseStates(QNetworkReply *reply)
             continue;
         }
 
-        qDebug() << domain << id << friendly_name << state;
-        model.addFile(Entity(domain, friendly_name, id, state, false));
+        // qDebug() << domain << id << friendly_name << state;
+        const auto entity = new Entity(domain, friendly_name, id, state, false);
+        m_database->updateOrInsertEntity(entity);
+        // model.addFile(Entity(domain, friendly_name, id, state, false));
     }
+    updateEntities();
 }
 
 void Hass::GetStates()
@@ -144,4 +150,14 @@ void Hass::ToggleState(const QString &domain, const QString &id) const
 QObject *Hass::getModel()
 {
     return &model;
+}
+
+void Hass::updateEntities()
+{
+    auto entities = m_database->getAllEntities();
+    model.clear();
+    for (auto entity : *entities)
+    {
+        model.addFile(*entity);
+    }
 }

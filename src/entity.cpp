@@ -29,3 +29,28 @@ bool Entity::inDashboard() const
 {
     return m_inDashboard;
 }
+
+void Entity::setDomain(const QString &domain)
+{
+    m_domain = domain;
+}
+
+void Entity::setName(const QString &name)
+{
+    m_name = name;
+}
+
+void Entity::setId(const QString &id)
+{
+    m_id = id;
+}
+
+void Entity::setState(const bool state)
+{
+    m_state = state;
+}
+
+void Entity::setInDashboard(const bool inDashboard)
+{
+    m_inDashboard = inDashboard;
+}

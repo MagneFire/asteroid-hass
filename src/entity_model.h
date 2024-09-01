@@ -21,6 +21,7 @@ class EntityModel : public QAbstractListModel
     explicit EntityModel(QObject *parent = nullptr);
     ~EntityModel() override = default;
 
+    void clear();
     void addFile(const Entity &file);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
